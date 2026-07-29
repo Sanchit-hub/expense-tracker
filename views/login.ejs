@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login | Expense Tracker</title>
+    <link rel="stylesheet" href="/css/styles.css" />
+  </head>
+  <body class="login-body">
+    <main class="login-card">
+      <div class="login-header">
+        <p class="eyebrow">Role-Based Expense Tracker</p>
+        <h1>Finance Expense Manager</h1>
+        <p class="muted">
+          Login with a predefined account to manage or view event expenses.
+        </p>
+      </div>
+
+      <% if (error) { %>
+      <div class="alert error"><%= error %></div>
+      <% } %>
+
+      <form action="/login" method="POST" class="login-form">
+        <label>
+          <span>Email</span>
+          <input type="email" name="email" placeholder="admin@college.edu" required />
+        </label>
+
+        <label>
+          <span>Password</span>
+          <input type="password" name="password" placeholder="Enter password" required />
+        </label>
+
+        <button type="submit" class="btn primary full-width">Login</button>
+      </form>
+
+      <div class="demo-credentials">
+        <h2>Demo Accounts</h2>
+        <p><strong>Admin:</strong> admin@college.edu / admin123</p>
+        <p><strong>Viewer:</strong> viewer@college.edu / viewer123</p>
+      </div>
+    </main>
+  </body>
+</html>

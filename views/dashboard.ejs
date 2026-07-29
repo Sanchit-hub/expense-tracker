@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard | Expense Tracker</title>
+    <link rel="stylesheet" href="/css/styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">Expense Tracker Dashboard</p>
+        <h1>Welcome, <%= user.role === "admin" ? "Admin" : "Faculty Advisor" %></h1>
+        <p class="muted"><%= user.email %> | Access: <%= user.role %></p>
+      </div>
+
+      <form action="/logout" method="POST">
+        <button type="submit" class="btn secondary">Logout</button>
+      </form>
+    </header>
+
+    <main class="dashboard-layout">
+      <section class="stats-grid">
+        <article class="stat-card">
+          <p>Total Expenses</p>
+          <h2 id="totalExpenses">Rs. <%= dashboard.totalExpenses.toFixed(2) %></h2>
+        </article>
+        <article class="stat-card">
+          <p>Total Categories</p>
+          <h2 id="totalCategories"><%= Object.keys(dashboard.categoryTotals).length %></h2>
+        </article>
+        <article class="stat-card">
+          <p>Recent Transactions</p>
+          <h2 id="recentCount"><%= dashboard.recentTransactions.length %></h2>
+        </article>
+      </section>
+
+      <section class="content-grid">
+        <div class="panel">
+          <div class="panel-header">
+            <div>
+              <h2>Expense Filters</h2>
+              <p class="muted">Filter by category and date range.</p>
+            </div>
+          </div>
+
+          <form id="filterForm" class="filter-grid">
+            <label>
+              <span>Category</span>
+              <input type="text" name="category" id="filterCategory" placeholder="e.g. Food" />
+            </label>
+            <label>
+              <span>Start Date</span>
+              <input type="date" name="startDate" id="filterStartDate" />
+            </label>
+            <label>
+              <span>End Date</span>
+              <input type="date" name="endDate" id="filterEndDate" />
+            </label>
+            <div class="filter-actions">
+              <button type="submit" class="btn primary">Apply Filter</button>
+              <button type="button" id="resetFilters" class="btn secondary">Reset</button>
+            </div>
+          </form>
+        </div>
+
+        <% if (user.role === "admin") { %>
+        <div class="panel">
+          <div class="panel-header">
+            <div>
+              <h2 id="formTitle">Add Expense</h2>
+              <p class="muted">Create or update an expense record.</p>
+            </div>
+          </div>
+
+          <form id="expenseForm" class="expense-form">
+            <input type="hidden" id="expenseId" />
+            <label>
+              <span>Title</span>
+              <input type="text" id="title" required />
+            </label>
+            <label>
+              <span>Amount</span>
+              <input type="number" id="amount" min="0" step="0.01" required />
+            </label>
+            <label>
+              <span>Category</span>
+              <input type="text" id="category" required />
+            </label>
+            <label>
+              <span>Date</span>
+              <input type="date" id="date" required />
+            </label>
+            <label class="full-span">
+              <span>Description</span>
+              <textarea id="description" rows="4" placeholder="Optional expense details"></textarea>
+            </label>
+            <div class="form-actions">
+              <button type="submit" class="btn primary">Save Expense</button>
+              <button type="button" id="cancelEdit" class="btn secondary hidden">Cancel Edit</button>
+            </div>
+          </form>
+        </div>
+        <% } else { %>
+        <div class="panel">
+          <div class="panel-header">
+            <div>
+              <h2>Read-Only Access</h2>
+              <p class="muted">Faculty Advisors can review expenses but cannot modify records.</p>
+            </div>
+          </div>
+          <p class="readonly-note">
+            You can filter, inspect totals, and review recent transactions from this dashboard.
+          </p>
+        </div>
+        <% } %>
+      </section>
+
+      <section class="content-grid">
+        <div class="panel">
+          <div class="panel-header">
+            <div>
+              <h2>Expenses By Category</h2>
+              <p class="muted">Automatic summary based on visible expenses.</p>
+            </div>
+          </div>
+          <div id="categorySummary" class="category-summary"></div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header">
+            <div>
+              <h2>Recent Transactions</h2>
+              <p class="muted">Latest five expenses.</p>
+            </div>
+          </div>
+          <div id="recentTransactions" class="recent-list"></div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-header">
+          <div>
+            <h2>All Expenses</h2>
+            <p class="muted">Track all event and activity spending in one place.</p>
+          </div>
+        </div>
+
+        <div id="messageBox" class="alert hidden"></div>
+
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Title</th>
+                <th>Amount</th>
+                <th>Category</th>
+                <th>Description</th>
+                <th>Date</th>
+                <% if (user.role === "admin") { %>
+                <th>Actions</th>
+                <% } %>
+              </tr>
+            </thead>
+            <tbody id="expenseTableBody"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      window.APP_STATE = {
+        user: <%- JSON.stringify(user) %>,
+        initialExpenses: <%- JSON.stringify(expenses) %>
+      };
+    </script>
+    <script src="/js/dashboard.js"></script>
+  </body>
+</html>
